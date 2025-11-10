@@ -84,6 +84,7 @@ int pop(MaxHeap * maxHeap) {
 
 MaxHeap *newMaxHeap(int nums[], int size) {
     MaxHeap * maxHeap = (MaxHeap*)malloc(sizeof(MaxHeap));
+    maxHeap->data = (int*)malloc(sizeof(int) * MAX_SIZE);
     maxHeap->size = size;
     memcpy(maxHeap->data, nums, size*sizeof(int));
     for (int i=parent(size-1); i>=0; i--) {
