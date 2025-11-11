@@ -1,4 +1,4 @@
-
+#define INT32_MIN -999999
 
 void selectionSort(int nums[], int size) {
     for (int i=0; i<size; i++) {
@@ -152,4 +152,103 @@ int * bucketSort(int nums[], int size, int bucket_size) {
     free(bucket_heads);
     return res;
 }
- 
+
+void shiftDown(int nums[], int n, int i) {
+    while (1) {
+        int l = 2*i+1;
+        int r = 2*i+2;
+        int smallest = i;
+        if (l<n&&nums[l]>nums[smallest]) {
+            smallest = l;
+        }
+        if (r<n&&nums[r]>nums[smallest]) {
+            smallest = r;
+        }
+        if (smallest=i) break;
+        int temp = nums[i];
+        nums[i] = nums[smallest];
+        nums[smallest] = temp;
+        i = smallest;
+    }
+}
+
+void heapSort(int nums[], int n) {
+    for (int i=n /2-1; i>=0; i--) {
+        shiftDown(nums, n, i);
+    }
+    for (int i=n-1; i>0; i--) {
+        int tmp = nums[0];
+        nums[0] = nums[i];
+        nums[i] = tmp;
+        shiftDown(nums, i, 0);
+    }
+}
+
+void countingSort(int nums[], int size) {
+    int m=0;
+    for (int i=0; i<size; i++) {
+        if (nums[i]>m) {
+            m = nums[i];
+        }
+    }
+
+    int *counter = calloc(m, sizeof(int));
+    for (int i=0; i<size; i++) {
+        counter[nums[i]]++;
+    }
+
+    for (int i=0; i<m; i++) {
+        counter[i+1] += counter[i];
+    }
+
+    int *res = malloc(sizeof(int)*size);
+    for (int i=size-1; i>=0; i--) {
+        int num =nums[i];
+        res[counter[num]-1] = num;
+        counter[num]--;
+    }
+    memcpy(nums, res, sizeof(int)*size);
+    free(res);
+    free(counter);
+}
+
+int digit(int num, int exp) {
+    return (num/exp) % 10;
+}
+
+void countingSortDigit(int nums[], int size, int exp) {
+    int *counter = (int *)malloc(sizeof(int)*10);
+    memset(counter, 0, sizeof(int)*10);
+    for (int i=0; i<size; i++) {
+        int d = digit(nums[i], exp);
+        counter[d]++;
+    }
+    for (int i=1; i<10; i++) {
+        counter[i] += counter[i-1];
+    }
+    int *res = (int *)malloc(sizeof(int) * size);
+    for (int i=size-1; i>=0; i--) {
+        int d = digit(nums[i], exp);
+        int j = counter[d]-1;
+        res[j] = nums[i];
+        counter[d]--;
+    }
+    for (int i=0; i<size; i++) {
+        nums[i] = res[i];
+    }
+    free(res);
+    free(counter);
+}
+
+void radixSort(int nums[], int size) {
+    int max = INT32_MIN;
+    for (int i=0; i<size; i++) {
+        if (nums[i]>max) {
+            max = nums[i];
+        }
+    }
+    for (int exp = 1; max>=exp; exp*=10) {
+        countingSortDigit(nums, size, exp);
+    }
+}
+
